@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    table {
+        border: 2px solid black;
+        
+        display: block;
+        width:fit-content;
+        text-align: center;
+    }
+    th {
+        border: 1px solid black;
+        padding: 20px;
+
+    }
+    tr {
+        border: 1px solid black;
+        padding: 20px;
+    }
+    td {
+        border: 1px solid black;
+        padding: 20px;
+    }
+    h1 {
+        text-align: center;
+    }
+</style>
+<body>
+    <h1>USER CART</h1>
+    <div>
+        <table>
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Product Name</th>
+                    <th onclick="sortByPrice()" scope="col">Product Price</th>
+                    <th scope="col">Quantity</th>
+                    <th scope="col">Total</th>
+                    <th scope="col">Image</th>
+                    <th scope="col">Category</th>
+                    <th colspan="2" scope="col">Edit</th>
+                    <th scope="col">Delete</th>
+
+                </tr>
+            </thead>
+            <tbody id="table_content">
+
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th>Total</th>
+                    <th colspan="9" id="total"></th>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+
+    <script>
+        let userLoginId = localStorage.getItem("userLogin");
+        let userList = JSON.parse(localStorage.getItem("userList")) || [];
+        function renderCart() {
+            if (userLoginId) {
+                for (let i = 0; i < userList.length; i++) {
+                    if (userList[i].id == userLoginId) {
+                        let text = "";
+                        let total = 0;
+                        for (let j = 0; j < userList[i].cart.length; j++) {
+                            total += userList[i].cart[j].price * userList[i].cart[j].quantity;
+                            text += `
+                        <tr>
+                <th scope="row">${j + 1}</th>
+                <td>${userList[i].cart[j].name}</td>
+                <td>${userList[i].cart[j].price}</td>
+                <td>${userList[i].cart[j].quantity}</td>
+                <td>${userList[i].cart[j].price * userList[i].cart[j].quantity}</td>
+                <td>
+                    <img style="width: 100px; height: 100px; border-radius: 10%;" src="${userList[i].cart[j].image}" >
+                </td>
+                <td>${userList[i].cart[j].category}</td>
+                <td><button onclick="increase(${userList[i].cart[j].id})">+</button></td>
+                <td><button onclick="decrease(${userList[i].cart[j].id})">-</button></td>
+                <td><button onclick="deleteProduct(${userList[i].cart[j].id})">Delete</button></td>
+            </tr>`
+                            document.getElementById("table_content").innerHTML = text;
+                            document.getElementById("total").innerHTML = total;
+
+                        }
+                    }
+                }
+            }
+        }
+        renderCart();
+
+        function increase(productId) {
+            for (let i = 0; i < userList.length; i++) {
+                if (userList[i].id == userLoginId) {
+                    for (let j = 0; j < userList[i].cart.length; j++) {
+                        if (userList[i].cart[j].id == productId) {
+                            userList[i].cart[j].quantity = ++userList[i].cart[j].quantity;
+                            localStorage.setItem("userList", JSON.stringify(userList));
+                            renderCart();
+                        }
+                    }
+                }
+            }
+        }
+
+        function decrease(productId) {
+            for (let i = 0; i < userList.length; i++) {
+                if (userList[i].id == userLoginId) {
+                    for (let j = 0; j < userList[i].cart.length; j++) {
+                        if (userList[i].cart[j].id == productId) {
+                            if (userList[i].cart[j].quantity == 1) {
+                                return;
+                            }
+                            userList[i].cart[j].quantity = --userList[i].cart[j].quantity;
+                            localStorage.setItem("userList", JSON.stringify(userList));
+                            renderCart();
+                        }
+                    }
+                }
+            }
+        }
+
+        function deleteProduct(productId) {
+            if (!confirm("Bạn có muốn xóa sản phẩm không?")) {
+                return;
+            }
+            for (let i = 0; i < userList.length; i++) {
+                if (userLoginId == userList[i].id) {
+                    userList[i].cart = userList[i].cart.filter(item => item.id != productId);
+                }
+            }
+            localStorage.setItem("userList", JSON.stringify(userList));
+            renderCart();
+
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    label {
+        display: inline-block;
+        min-width: 100px;
+        padding: 10px;
+    }
+    img {
+        width: 600px;
+        height: 200px;
+    }
+    h1 {
+        text-align: center;
+    }
+    form {
+        text-align: center;
+    }
+</style>
+<body>
+    <div>
+        <img src="./asset/logo1.png" alt="">
+    </div>
+    <div>
+        <h1>Login page</h1>
+        
+        <form action="">
+            
+            <label for="email">Email</label>
+            <input id="email" type="text"> <br>
+            <label for="password">Password</label>
+            <input id="password" type="text"> <br>
+            <button onclick="login(event)">Login</button>
+            
+        </div>
+    </form>
+
+    <script>
+        let users = JSON.parse(localStorage.getItem("userList"))||[];
+        function login(e) {
+            e.preventDefault();
+            let email = document.getElementById("email").value;
+            let password = document.getElementById("password").value;
+            for (let i = 0; i < users.length; i++) {
+                if (users[i].email==email && users[i].pass==password) {
+                    window.location.href = "./index.html";
+                    localStorage.setItem("userLogin",users[i].id)
+                    return;
+                }
+            }
+            console.log("email hoặc mật khẩu không đúng");
+            
+        }
+    </script>
+</body>
+</html>
